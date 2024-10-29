@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-dark">Daftar Pinjaman</h2>
+    <hr class="my-4">
+    <form method="post">
+        {% csrf_token %}
+        <table class="table table-hover" style="background-color: #F6E9B2; color: #070606;">
+            <thead style="background-color: #1B1B1B; color: #F6E9B2;">
+                <tr>
+                    <th>Pilih</th>
+                    <th>Username</th>
+                    <th>Buku</th>
+                    <th>Tanggal Pinjam</th>
+                    <th>Tanggal Kembali</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>
+                        {% if not user.is_superuser %}
+                        {% if not transaction.return_date %}
+                            <input type="checkbox" name="transaction_ids" value="{{ transaction.id }}">
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                    <td>{{ transaction.user.user.username }}</td>
+                    <td>{{ transaction.book.title }}</td>
+                    <td>{{ transaction.borrowed_date }}</td>
+                    <td>{{ transaction.return_date|default:"Belum Kembali" }}</td>
+                    <td>
+                        {% if not user.is_superuser %}
+                        <button type="submit" class="btn btn-info btn-sm">Kembalikan Buku</button>
+                        {% endif %}
+                        {% if user.is_superuser %}
+                            <a href="{% url 'edit_loan' transaction.id %}" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Edit Transaction">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'delete_loan' transaction.id %}" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Delete Transaction">
+                                <i class="fas fa-trash-alt"></i>
+                            </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">Tidak ada pinjaman yang tersedia.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="text-center mt-3">
+            <a href="{% url 'return_list' %}" class="btn btn-info btn-sm">Lihat Daftar Pengembalian</a>
+            {% if user.is_superuser %}
+            <a href="{% url 'export_loans_csv' %}" class="btn btn-info btn-sm">Ekspor Data Pinjaman ke CSV</a>
+            <a href="{% url 'add_loan' %}" class="btn btn-success btn-sm">Tambah Pinjaman Baru</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

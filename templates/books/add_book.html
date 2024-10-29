@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="addbook-container">
+    <div class="addbook-card" style="animation: fadeIn 0.7s ease-out;">
+        <h2 class="addbook-title text-center">Tambah Buku</h2>
+        <hr class="my-4">
+
+        <form method="post">
+        {% csrf_token %}
+            <div class="form-group">
+                <label for="title" class="form-label">Judul</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="author" class="form-label">Penulis</label>
+                <input type="text" name="author" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="published_date" class="form-label">Tanggal Terbit</label>
+                <input type="date" name="published_date" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="stock" class="form-label">Stok</label>
+                <input type="number" name="stock" class="form-control" required>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-info btn-sm">Tambah Buku</button>
+                <a href="{% url 'book_list' %}" class="btn btn-secondary btn-sm">Kembali ke Daftar Buku</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tambahkan CSS khusus untuk gaya form -->
+<style>
+    :root {
+        --primary-beige: #f5f5dc;
+        --dark-beige: #e5e5c3;
+        --accent-brown: #8B7355;
+        --soft-blue: #7393B3;
+        --light-gray: #F5F5F5;
+        --dark-gray: #696969;
+    }
+
+    .addbook-container {
+        align-items: center;
+        justify-content: center;
+        background-color: var(--dark-beige);
+        padding: 25px;
+        border-radius: 15px;
+    }
+
+    .addbook-container h2 {
+        color: var(--dark-gray);
+        font-weight: 600;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-control {
+        border: none;
+        border-bottom: 2px solid var(--dark-gray);
+        border-radius: 5px;
+        padding: 0.75rem 0;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        box-shadow: none;
+        border-color: var(--accent-brown);
+        background: transparent;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %}

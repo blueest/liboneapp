@@ -1,0 +1,433 @@
+<!-- templates/base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LibOne - Aplikasi Perpustakaan Online</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --hover-color: #0056b3;
+            --bg-color: #f5f5dc;
+            --footer-bg: #1a1a1a;
+            --text-light: #ffffff;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            padding: 1rem 0;
+        }
+
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            background: rgba(255, 255, 255, 0.98) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary-color) !important;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+        }
+
+        .navbar-nav .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            margin: 0 0.2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s ease;
+        }
+
+        .navbar-nav .nav-link:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Dropdown Styles */
+        .dropdown-menu {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            animation: dropdown-fade 0.3s ease;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+        }
+
+        .dropdown-item {
+            padding: 0.7rem 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dropdown-item:hover {
+            background: rgba(0, 123, 255, 0.1);
+            padding-left: 2rem;
+        }
+
+        .dropdown-item i {
+            margin-right: 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-item:hover i {
+            transform: scale(1.2);
+        }
+
+        /* Footer Styles */
+        footer {
+            background: var(--footer-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), #00ff88, var(--primary-color));
+            animation: gradient-flow 3s linear infinite;
+        }
+
+        footer h5 {
+            color: #F6E9B2;
+            font-weight: 600;
+            position: relative;
+            display: inline-block;
+        }
+
+        footer h5::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        .social-icon {
+            display: inline-block;
+            margin: 0 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-5px);
+            color: var(--primary-color) !important;
+        }
+
+        .social-icon::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover::after {
+            opacity: 1;
+            visibility: visible;
+            bottom: -40px;
+        }
+
+        /* Animations */
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes dropdown-fade {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .navbar-nav {
+                padding: 1rem 0;
+            }
+            
+            .dropdown-menu {
+                border: none;
+                background: transparent;
+                box-shadow: none;
+            }
+
+            .social-icon::after {
+                display: none;
+            }
+        }
+
+        .btn {
+            background-color: #f5f5dc;
+            text-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            padding: 10px 20px;
+            border: none;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #333;
+            color: #f5f5dc;
+            transform: translateY(-4px);
+        }
+    </style>        
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light sticky-top" style="background-color: #ffffff;">
+            <div class="container">
+                <!-- Navbar Brand -->
+                <a class="navbar-brand" href="{% url 'index' %}">LibOne</a>
+    
+                <!-- Akun (Sisi Kiri) -->
+                <ul class="navbar-nav mr-auto">
+                    {% if not user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-user"></i> Akun
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="accountDropdown">
+                                <a class="dropdown-item" href="{% url 'register' %}"><i class="fas fa-user-plus"></i> Daftar</a>
+                                <a class="dropdown-item" href="{% url 'login' %}"><i class="fas fa-sign-in-alt"></i> Login</a>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-user"></i> {{ user.username }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                {% if user.is_staff %}
+                                    <a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fas fa-cog"></i> Admin Panel</a>
+                                {% endif %}
+                                <a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user"></i> My Profile</a>
+                                <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                            </div>
+                        </li>
+                    {% endif %}
+                </ul>
+    
+                <!-- Navbar Toggle -->
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+    
+                <!-- Navbar Menu (Sisi Kanan) -->
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="resourcesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-book"></i> Resources
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="resourcesDropdown">
+                                <a class="dropdown-item" href="{% url 'book_list' %}"><i class="fas fa-book"></i> Daftar Buku</a>
+                                <a class="dropdown-item" href="{% url 'online_books' %}"><i class="fas fa-book"></i> Online Book</a>
+                                {% if user.is_authenticated %}
+                                    {% if user.is_superuser %}
+                                        <a class="dropdown-item" href="{% url 'member_list' %}"><i class="fas fa-users"></i> Daftar Anggota</a>
+                                    {% endif %}
+                                    <a class="dropdown-item" href="{% url 'loan_list' %}"><i class="fas fa-file-alt"></i> Daftar Pinjaman</a>
+                                {% endif %}
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'index' %}"><i class="fas fa-home"></i> Home</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="container">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer Section -->
+<footer class="bg-dark text-light mt-5" data-aos='fade-up'>
+    <div class="container py-4">
+        <div class="row">
+            <!-- Kolom 1: Help Desk -->
+            <div class="col-md-4">
+                <h5 style='color : #F6E9B2;'>Help Desk</h5>
+                <hr class='my-4'>
+                <ul class="list-unstyled">
+                    <li><a href="mailto:helpdesk@sekolah.com" class="text-light">Email: helpdesk@sekolah.com</a></li>
+                    <li><a href="tel:+62123456789" class="text-light">Telepon: +62 123 456 789</a></li>
+                    <li><a href="#" class="text-light">FAQ</a></li>
+                    <li><a href="#" class="text-light">Kontak Kami</a></li>
+                    <hr>
+                    <li>
+                        <p class="text-p">Ayo Bergabung Bersama Kami!</p>
+                        <a class="btn btn-outline-secondary btn-lg mt-3" href="{% url 'register' %}" role="button">Daftar Sekarang</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Kolom 2: Find Us -->
+            <div class="col-md-4">
+                <h5 style='color : #F6E9B2;'>Find Us</h5>
+                <hr class='my-4'>
+                <div>
+                    <a href="https://facebook.com" target="_blank" class="text-light social-icon" data-tooltip="Facebook">
+                        <i class="fab fa-facebook fa-2x"></i>
+                    </a>
+                    <a href="https://twitter.com" target="_blank" class="text-light social-icon" data-tooltip="Twitter">
+                        <i class="fab fa-twitter fa-2x"></i>
+                    </a>
+                    <a href="https://instagram.com" target="_blank" class="text-light social-icon" data-tooltip="Instagram">
+                        <i class="fab fa-instagram fa-2x"></i>
+                    </a>
+                    <a href="https://whatsapp.com" target="_blank" class="text-light social-icon" data-tooltip="WhatsApp">
+                        <i class="fab fa-whatsapp fa-2x"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Kolom 3: Lokasi Sekolah -->
+            <div class="col-md-4">
+                <h5 style='color : #F6E9B2;'>Lokasi Sekolah</h5>
+                <hr class='my-4'>
+                <p>Jl. Contoh No. 1, Desa Contoh, Kecamatan Contoh, Kota Contoh, Provinsi Contoh.</p>
+                <!-- Google Maps Embed -->
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.2135162981455!2d-122.40104138468152!3d37.78507597975711!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085809b9ebcf3e3%3A0xb9c2c0cbfbe0172e!2sYour%20School%20Name!5e0!3m2!1sen!2sus!4v1617934026151!5m2!1sen!2sus" 
+                    width="100%" 
+                    height="150" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+    <div class="text-center py-3">
+        <p>&copy; 2024 SMPN 1 Langkaplancar. All Rights Reserved.</p>
+        <p><a href="/kebijakan" class="text-light">Kebijakan Kami</a> | <a href="/syarat-dan-ketentuan" class="text-light">Syarat dan Ketentuan</a></p>
+    </div>
+</footer>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+    <script>
+        AOS.init({
+            duration: 1200, // Durasi animasi
+        });
+
+        // Navbar Scroll Effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // Smooth Scroll for Navigation Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Enhanced Dropdown Behavior
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+            const toggle = dropdown.querySelector('.dropdown-toggle');
+            const menu = dropdown.querySelector('.dropdown-menu');
+            
+            ['mouseenter', 'mouseleave'].forEach(event => {
+                dropdown.addEventListener(event, function(e) {
+                    const isHovered = event === 'mouseenter';
+                    if (window.innerWidth > 768) {
+                        menu.style.display = isHovered ? 'block' : 'none';
+                        if (isHovered) {
+                            menu.style.opacity = '1';
+                            menu.style.transform = 'translateY(0)';
+                        }
+                    }
+                });
+            });
+        });
+
+        // Footer Animation on Scroll
+        const footer = document.querySelector('footer');
+        const footerObserver = new IntersectionObserver(
+            (entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+        footerObserver.observe(footer);
+    </script>
+</body>
+</html>

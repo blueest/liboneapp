@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-dark">Daftar Pengembalian</h2>
+    <hr class="my-4">
+    <table class="table table-hover" style="background-color: #F6E9B2; color: #070606;">
+        <thead style="background-color: #1B1B1B; color: #F6E9B2;">
+            <tr>
+                <th>Username</th>
+                <th>Buku</th>
+                <th>Tanggal Pinjam</th>
+                <th>Tanggal Kembali</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.user.user.username }}</td>
+                <td>{{ transaction.book.title }}</td>
+                <td>{{ transaction.borrowed_date }}</td>
+                <td>{{ transaction.return_date }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">Tidak ada pengembalian yang tersedia.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="text-center mt-3">
+        <a href="{% url 'loan_list' %}" class="btn btn-info btn-sm">Kembali ke Daftar Pinjaman</a>
+        {% if user.is_superuser %}
+            <a href="{% url 'export_returns_csv' %}" class="btn btn-info btn-sm">Ekspor Data Pengembalian ke CSV</a>
+            <a href="{% url 'add_return' %}" class="btn btn-success btn-sm">Tambah Pengembalian Baru</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

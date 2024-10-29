@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Grafik Aktivitas Siswa</h2>
+    <canvas id="activityChart" width="400" height="200"></canvas>
+</div>
+
+<script>
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    const activityChart = new Chart(ctx, {
+        type: 'bar', // Anda bisa mengubah ini menjadi 'line', 'pie', dll.
+        data: {
+            labels: {{ labels|safe }},  // Menampilkan label dari view
+            datasets: [{
+                label: 'Jumlah Aktivitas',
+                data: {{ counts|safe }},   // Menampilkan data dari view
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

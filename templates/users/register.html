@@ -1,0 +1,465 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="register-container">
+    <!-- Header dengan gradient -->
+    <div class="header-section">
+        <h2 class="main-title">Pendaftaran Pengguna Baru</h2>
+        <p class="subtitle">Silahkan lengkapi data diri Anda</p>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-wrapper">
+        <form method="POST" class="register-form" id="registerForm">
+            {% csrf_token %}
+            
+            <!-- Form Fields -->
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" name="username" id="username" class="form-input" required>
+                    <label for="username" class="floating-label">Username</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" name="email" id="email" class="form-input" required>
+                    <label for="email" class="floating-label">Email</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" name="password" id="password" class="form-input" required>
+                    <label for="password" class="floating-label">Password</label>
+                </div>
+                <button type="button" class="toggle-password" style="border-radius: 15px; margin-top: 10px;" onclick="togglePassword()">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <span class="btn-text">Daftar</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </form>
+
+        <!-- QR Code Section -->
+        <div class="qr-section">
+            <h3 class="section-title">
+                <i class="fas fa-qrcode"></i>
+                Daftar dengan QR Code
+            </h3>
+            <div class="qr-wrapper">
+                <input type="text" id="qr_data" name="qr_data" class="form-input" readonly>
+                <button type="button" class="qr-btn" onclick="openQRScanner()">
+                    <i class="fas fa-camera"></i>
+                    <span>Scan QR Code</span>
+                </button>
+            </div>
+            <div id="reader" class="qr-reader"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal" id="confirmationModal">
+    <div class="modal-content">
+        <h4>Konfirmasi</h4>
+        <p>Apakah Anda yakin ingin mengirim data pendaftaran?</p>
+        <div class="modal-actions">
+            <button class="cancel-btn" onclick="closeModal()">Batal</button>
+            <button class="confirm-btn" onclick="submitForm()">Konfirmasi</button>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://kit.fontawesome.com/your-code.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+<script>
+    // Toggle Password Visibility
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleBtn = document.querySelector('.toggle-password i');
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleBtn.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleBtn.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
+    // Form Submission with Loading
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        document.getElementById('confirmationModal').style.display = 'flex';
+    });
+
+    function submitForm() {
+        closeModal();
+        showLoading();
+        document.getElementById('registerForm').submit();
+    }
+
+    function showLoading() {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('confirmationModal').style.display = 'none';
+    }
+
+    // QR Code Scanner
+    function openQRScanner() {
+        const reader = document.getElementById('reader');
+        reader.style.display = 'block';
+        
+        const qrCodeReader = new Html5Qrcode("reader");
+        qrCodeReader.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            (qrCodeMessage) => {
+                document.getElementById('qr_data').value = qrCodeMessage;
+                fillFormFields(qrCodeMessage);
+                qrCodeReader.stop();
+                reader.style.display = 'none';
+            },
+            (error) => console.warn(error)
+        ).catch(err => console.error(err));
+    }
+
+    function fillFormFields(qrData) {
+        try {
+            const data = JSON.parse(qrData);
+            document.getElementById('username').value = data.username || '';
+            document.getElementById('email').value = data.email || '';
+            // Tambahkan animasi highlight pada field yang terisi
+            ['username', 'email'].forEach(field => {
+                const input = document.getElementById(field);
+                input.classList.add('filled-highlight');
+                setTimeout(() => input.classList.remove('filled-highlight'), 1000);
+            });
+        } catch (e) {
+            showToast('QR Code tidak valid!');
+        }
+    }
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+</script>
+
+<style>
+    /* Base Styles */
+    :root {
+        --primary-color: #7393B3;
+        --secondary-color: #e5e5c3;
+        --background-color: #e5e5c3;
+        --text-color: #696969;
+        --error-color: #EF4444;
+        --success-color: #10B981;
+        --border-radius: 12px;
+        --transition-speed: 0.3s;
+    }
+
+    .register-container {
+        min-height: 100vh;
+        padding: 2rem;
+        background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%);
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    /* Header Styles */
+    .header-section {
+        text-align: center;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        color: white;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    /* Form Styles */
+    .form-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-color);
+        opacity: 0.5;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 1rem 1rem 1rem 3rem;
+        border: 2px solid #E5E7EB;
+        border-radius: var(--border-radius);
+        transition: all var(--transition-speed);
+        font-size: 1rem;
+    }
+
+    .form-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        outline: none;
+    }
+
+    .floating-label {
+        position: absolute;
+        left: 3rem;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: all var(--transition-speed);
+        color: #6B7280;
+        pointer-events: none;
+    }
+
+    .form-input:focus + .floating-label,
+    .form-input:not(:placeholder-shown) + .floating-label {
+        top: 0;
+        left: 1rem;
+        font-size: 0.875rem;
+        color: var(--primary-color);
+        background: white;
+        padding: 0 0.5rem;
+    }
+
+    /* Button Styles */
+    .submit-btn {
+        width: 100%;
+        padding: 1rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: var(--border-radius);
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all var(--transition-speed);
+    }
+
+    .submit-btn:hover {
+        background: var(--secondary-color);
+        transform: translateY(-1px);
+    }
+
+    /* QR Code Section */
+    .qr-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 2px solid #E5E7EB;
+    }
+
+    .qr-wrapper {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .qr-btn {
+        background: var(--secondary-color);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all var(--transition-speed);
+    }
+
+    .qr-btn:hover {
+        background: var(--primary-color);
+    }
+
+    .qr-reader {
+        display: none;
+        margin-top: 1rem;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    /* Loading Overlay */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid var(--primary-color);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+
+    /* Modal Styles */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        padding: 2rem;
+        border-radius: var(--border-radius);
+        max-width: 400px;
+        width: 90%;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .cancel-btn,
+    .confirm-btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 600;
+        transition: all var(--transition-speed);
+    }
+
+    .cancel-btn {
+        background: #E5E7EB;
+        color: var(--text-color);
+    }
+
+    .confirm-btn {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    /* Toast Notification */
+    .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: var(--text-color);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: var(--border-radius);
+        animation: slideIn 0.3s ease-out;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
+
+    .filled-highlight {
+        animation: highlight 1s ease-out;
+    }
+
+    @keyframes highlight {
+        0% { background-color: rgba(79, 70, 229, 0.1); }
+        100% { background-color: transparent; }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 640px) {
+        .register-container {
+            padding: 1rem;
+        }
+
+        .main-title {
+            font-size: 2rem;
+        }
+
+        .form-wrapper {
+            padding: 1.5rem;
+        }
+
+        .qr-wrapper {
+            flex-direction: column;
+        }
+
+        .modal-content {
+            width: 95%;
+            margin: 1rem;
+        }
+    }
+
+    .fas {
+
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="book-detail-container">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Book Card -->
+                <div class="book-card">
+                    <!-- Book Header -->
+                    <div class="book-header">
+                        <div class="book-cover">
+                            <!-- Default book cover icon jika tidak ada gambar -->
+                            <div class="book-cover-icon">
+                                <i class="fas fa-book"></i>
+                            </div>
+                        </div>
+                        <div class="book-title-section">
+                            <h1 class="book-title">{{ book.title }}</h1>
+                            <div class="book-metadata">
+                                <span class="author">
+                                    <i class="fas fa-user-edit"></i>
+                                    {{ book.author }}
+                                </span>
+                                <span class="published-date">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    {{ book.published_date }}
+                                </span>
+                                <span class="stock {% if book.stock > 0 %}in-stock{% else %}out-of-stock{% endif %}">
+                                    <i class="fas fa-cubes"></i>
+                                    {% if book.stock > 0 %}
+                                        Tersedia ({{ book.stock }})
+                                    {% else %}
+                                        Stok Habis
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Book Content -->
+                    <div class="book-content">
+                        <div class="content-section">
+                            <h3 class="section-title">
+                                <i class="fas fa-info-circle"></i>
+                                Deskripsi
+                            </h3>
+                            <div class="description">
+                                {{ book.description|linebreaks }}
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="book-actions">
+                            {% if user.is_superuser %}
+                            <div class="admin-actions">
+                                <a href="{% url 'edit_book' book.id %}" class="btn btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                    Edit Buku
+                                </a>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    <i class="fas fa-trash-alt"></i>
+                                    Hapus Buku
+                                </button>
+                            </div>
+                            {% endif %}
+                            <a href="{% url 'book_list' %}" class="btn btn-back">
+                                <i class="fas fa-arrow-left"></i>
+                                Kembali ke Daftar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+{% if user.is_superuser %}
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Penghapusan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin menghapus buku "{{ book.title }}"?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <form action="{% url 'delete_book' book.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Hapus</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+    /* Container Styles */
+    .book-detail-container {
+        min-height: 100vh;
+    }
+
+    /* Book Card Styles */
+    .book-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    /* Book Header Styles */
+    .book-header {
+        display: flex;
+        align-items: center;
+        padding: 2rem;
+        background: linear-gradient(to right, #2c3e50, #3498db);
+        color: white;
+    }
+
+    .book-cover {
+        width: 150px;
+        height: 200px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .book-cover-icon {
+        font-size: 3rem;
+        opacity: 0.8;
+    }
+
+    .book-title-section {
+        flex: 1;
+    }
+
+    .book-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .book-metadata {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .book-metadata span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .book-metadata i {
+        opacity: 0.8;
+    }
+
+    /* Stock Status */
+    .stock {
+        padding: 0.3rem 1rem;
+        border-radius: 50px;
+        font-weight: 500;
+    }
+
+    .in-stock {
+        background: rgba(46, 213, 115, 0.2);
+        color: #2ed573;
+    }
+
+    .out-of-stock {
+        background: rgba(255, 71, 87, 0.2);
+        color: #ff4757;
+    }
+
+    /* Content Section */
+    .book-content {
+        padding: 2rem;
+    }
+
+    .content-section {
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        color: #2c3e50;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .description {
+        color: #576574;
+        line-height: 1.8;
+        font-size: 1.1rem;
+    }
+
+    /* Action Buttons */
+    .book-actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #eee;
+    }
+
+    .admin-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    /* Button Styles */
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border-radius: 10px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .btn-warning {
+        background: #f1c40f;
+        border: none;
+        color: #2c3e50;
+    }
+
+    .btn-warning:hover {
+        background: #f39c12;
+        color: white;
+    }
+
+    .btn-danger {
+        background: #e74c3c;
+        border: none;
+    }
+
+    .btn-danger:hover {
+        background: #c0392b;
+    }
+
+    .btn-back {
+        background: #ecf0f1;
+        color: #2c3e50;
+        border: none;
+    }
+
+    .btn-back:hover {
+        background: #bdc3c7;
+        color: #2c3e50;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 15px;
+    }
+
+    .modal-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #eee;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #eee;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .book-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .book-cover {
+            margin: 0 0 1.5rem 0;
+        }
+
+        .book-metadata {
+            justify-content: center;
+        }
+
+        .book-actions {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .admin-actions {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-back {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animasi untuk book card
+    const bookCard = document.querySelector('.book-card');
+    
+    // Tambahkan animasi saat scroll
+    function isElementInViewport(el) {
+        const rect = el.getBoundingClientRect();
+        return (
+            rect.top >= 0 &&
+            rect.left >= 0 &&
+            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+        );
+    }
+
+    function handleScroll() {
+        if (isElementInViewport(bookCard)) {
+            bookCard.style.transform = 'translateY(0)';
+            bookCard.style.opacity = '1';
+        }
+    }
+
+    // Set initial state
+    bookCard.style.transform = 'translateY(20px)';
+    bookCard.style.opacity = '0';
+    bookCard.style.transition = 'all 0.6s ease-out';
+
+    // Listen for scroll
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Trigger on initial load
+});
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Aktivitas Anda</h2>
+    <p>Jumlah aktivitas: {{ activity_count }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Cek Reward</button>
+        <a href="{% url 'profile' %}" class="btn btn-light px-4">
+            <i class="fas fa-arrow-left me-2"></i> Kembali
+        </a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Tambah Pinjaman Baru</h2>
+    <hr class="my-4">
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="user">Pengguna</label>
+            <select id="user" name="user_id" class="form-control" required>
+                {% for profile in profiles %}
+                <option value="{{ profile.id }}">{{ profile.user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="book">Buku</label>
+            <select id="book" name="book_id" class="form-control" required>
+                {% for book in books %}
+                <option value="{{ book.id }}">{{ book.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="borrowed_date">Tanggal Pinjam</label>
+            <input type="date" id="borrowed_date" name="borrowed_date" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Tambah Pinjaman</button>
+        <a  href="{% url 'loan_list' %}" class="btn btn-secondary">Kembali</a>
+    </form>
+</div>
+{% endblock %}

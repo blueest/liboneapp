@@ -1,0 +1,21 @@
+<!-- templates/search_results.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center" style='padding: 20px;'>Hasil Pencarian</h2>
+    <hr class='my-4'>
+    <form method="GET" class="text-center" action="{% url 'search_books' %}">
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Cari</button>
+    </form>
+    
+    <ul class="list-group mt-4">
+        {% for book in results %}
+            <li class="list-group-item">{{ book.title }} oleh {{ book.author }}</li>
+        {% empty %}
+            <li class="list-group-item">Tidak ada hasil yang ditemukan.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center text-dark">Daftar Buku</h2>
+    <hr class="my-4">
+    {% if user.is_superuser %}
+        <div class="text-right mb-3">
+            <a href="{% url 'add_book'  %}" class="btn btn-info btn-sm">Tambah Buku</a>
+        </div>
+    {% endif %}
+    
+    <table class="table table-hover" style="background-color: #F6E9B2; color: #070606;">
+        <thead style="background-color: #1B1B1B; color: #F6E9B2;">
+            <tr>
+                <th>Judul</th>
+                <th>Penulis</th>
+                <th>Stok</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author }}</td>
+                <td>{{ book.stock }}</td>
+                <td>
+                    <a href="{% url 'book_detail' book.id %}" class="btn btn-info btn-sm" data-toggle="tooltip" title="Detail Buku">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                    {% if user.is_superuser %}
+                        <a href="{% url 'edit_book' book.id %}" class="btn btn-warning btn-sm" data-toggle="tooltip" title="Edit Buku">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'delete_book' book.id %}" class="btn btn-danger btn-sm" data-toggle="tooltip" title="Hapus Buku">
+                            <i class="fas fa-trash-alt"></i>
+                        </a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">Tidak ada buku yang tersedia.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if not user.is_superuser %}
+    <div class="text-center mt-3">
+        <a href="{% url 'borrow_book' %}" class="btn btn-info">Pinjam Buku</a>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

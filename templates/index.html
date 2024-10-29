@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-beige: #f5f5dc;
+        --dark-beige: #e5e5c3;
+        --accent-brown: #8B7355;
+        --soft-blue: #7393B3;
+        --light-gray: #F5F5F5;
+        --dark-gray: #696969;
+    }
+
+    /* Jumbotron Styles */
+    .jumbotron {
+        background: linear-gradient(135deg, var(--primary-beige), var(--dark-beige));
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .jumbotron::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2));
+        transform: translateY(-100%);
+        transition: transform 0.6s ease;
+    }
+
+    .jumbotron:hover::before {
+        transform: translateY(0);
+    }
+
+    .jumbotron .display-4 {
+        color: var(--accent-brown);
+        font-size: 2.8rem;
+        font-weight: 700;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        animation: slideInDown 1s ease;
+    }
+
+    .jumbotron .lead {
+        color: var(--dark-gray);
+        font-size: 1.2rem;
+        animation: fadeIn 1.2s ease;
+    }
+
+    /* Search Box Styles */
+    .search-container {
+        position: relative;
+        margin: 2rem 0;
+        animation: slideInUp 1s ease;
+    }
+
+    .input-group {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 25px;
+        overflow: hidden;
+    }
+
+    .input-group input {
+        border: none;
+        padding: 1.2rem;
+        background: rgba(255, 255, 255, 0.9);
+        transition: all 0.3s ease;
+    }
+
+    .input-group input:focus {
+        background: white;
+        box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .input-group .btn-primary {
+        background-color: var(--soft-blue);
+        border: none;
+        padding: 0.8rem 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .input-group .btn-primary:hover {
+        background-color: var(--accent-brown);
+        transform: translateX(3px);
+    }
+
+    /* Feature List Styles */
+    .list-group-item {
+        background: transparent;
+        border: 1px solid rgba(139, 115, 85, 0.2);
+        margin-bottom: 0.5rem;
+        border-radius: 8px !important;
+        transition: all 0.3s ease;
+        animation: fadeInLeft 0.5s ease;
+        animation-fill-mode: both;
+    }
+
+    .list-group-item:hover {
+        transform: translateX(10px);
+        background: rgba(255, 255, 255, 0.6);
+        border-color: var(--accent-brown);
+    }
+
+    .list-group-item i {
+        margin-right: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .list-group-item:hover i {
+        transform: scale(1.2);
+    }
+
+    /* Section Styles */
+    section {
+        padding: 4rem 0;
+        background: var(--light-gray);
+        border-radius: 15px;
+        margin: 2rem 0;
+    }
+
+    .card {
+        border: none;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Animation Keyframes */
+    @keyframes slideInDown {
+        from {
+            transform: translateY(-50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideInUp {
+        from {
+            transform: translateY(50px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    /* Popular Books Section */
+    .popular-books .list-group-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: white;
+    }
+
+    .popular-books .badge {
+        background-color: var(--soft-blue);
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    /* Reviews Section */
+    .blockquote {
+        border-left: 4px solid var(--accent-brown);
+        padding-left: 1.5rem;
+        margin: 2rem 0;
+        padding: 1rem;
+        border-radius: 8px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .jumbotron {
+            padding: 2rem 1rem;
+        }
+
+        .jumbotron .display-4 {
+            font-size: 2rem;
+        }
+
+        .input-group {
+            flex-direction: column;
+        }
+
+        .input-group input {
+            border-radius: 25px;
+            margin-bottom: 1rem;
+        }
+
+        .input-group .btn-primary {
+            border-radius: 25px;
+        }
+    }
+</style>
+
+<div class="jumbotron text-center animated fadeIn">
+    <h1 class="display-4 text-primary">Selamat Datang di <strong>LibOne!</strong></h1>
+    <p class="lead">Aplikasi Perpustakaan Online yang Memudahkan Anda untuk Mencari, Mengelola, dan Meminjam Buku.</p>
+    <hr class="my-4">
+
+    <form method="GET" action="{% url 'search_books' %}" class="form-inline justify-content-center mt-4">
+        <div class="input-group">
+            <input type="text" name="query" class="form-control" placeholder="Cari Buku..." style="border-color: #007BFF;">
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Cari</button>
+            </div>
+        </div>
+    </form>
+    <hr>
+    <p>Dengan <strong>LibOne</strong>, Anda dapat:</p>
+    <ul class="list-group">
+        <li class="list-group-item"><i class="fas fa-search text-warning"></i> <em>Mencari dan Menemukan Buku dengan Mudah</em></li>
+        <li class="list-group-item"><i class="fas fa-user-plus text-success"></i> <em>Mendaftar sebagai Pengguna untuk Akses Lebih Lanjut</em></li>
+        <li class="list-group-item"><i class="fas fa-share-square text-danger"></i> <em>Meminjam dan Mengembalikan Buku Secara Efisien</em></li>
+        <li class="list-group-item"><i class="fas fa-user text-info"></i> <em>Mengelola Profil dan Riwayat Peminjaman Anda</em></li>
+        <li class="list-group-item"><i class="fas fa-book text-secondary"></i> <em>Menemukan Buku yang Tersedia di Perpustakaan Sekolah</em></li>
+    </ul>
+</div>
+
+<section  style="background-color: #f5f5dc;">
+    <div class="container">
+        <h2 class="text-center text-primary">Mengapa Memilih <strong>LibOne?</strong></h2>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col-md-4" data-aos='fade-right'>
+                <h3 class="text-success">Fleksibel</h3>
+                <p>Akses informasi buku dari mana saja dan kapan saja, baik secara online maupun langsung di perpustakaan.</p>
+            </div>
+            <div class="col-md-4" data-aos='fade-up'>
+                <h3 class="text-danger">Mudah Digunakan</h3>
+                <p>Antarmuka yang intuitif dan ramah pengguna untuk semua usia.</p>
+            </div>
+            <div class="col-md-4" data-aos='fade-left'>
+                <h3 class="text-info">Informasi Lengkap</h3>
+                <p>Detail lengkap tentang buku yang membantu Anda memilih dan meminjam buku yang tepat.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Konten Baru untuk Buku Populer dan Jumlah Buku -->
+<section class="popular-books mt-5"  style="background-color: #f5f5dc;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8" data-aos='fade-right'>
+                <h2 class='text-center text-primary'>Buku Populer</h2>
+                <hr class="my-4">
+                <ul class="list-group">
+                    <li class="list-group-item">1. <strong>Judul Buku Pertama</strong> <span class="badge badge-primary float-right">5</span></li>
+                    <li class="list-group-item">2. <strong>Judul Buku Kedua</strong> <span class="badge badge-primary float-right">3</span></li>
+                    <li class="list-group-item">3. <strong>Judul Buku Ketiga</strong> <span class="badge badge-primary float-right">7</span></li>
+                    <li class="list-group-item">4. <strong>Judul Buku Keempat</strong> <span class="badge badge-primary float-right">2</span></li>
+                    <li class="list-group-item">5. <strong>Judul Buku Kelima</strong> <span class="badge badge-primary float-right">8</span></li>
+                </ul>
+            </div>
+            <div class="col-md-4" data-aos='fade-left'>
+                <h2 class='text-center text-primary'>Jumlah Buku</h2>
+                <hr class="my-4">
+                <p>Total Buku Tersedia: <strong>50</strong></p>
+                <p>Buku Dipinjam: <strong>10</strong></p>
+                <p>Buku Dalam Proses Pengembalian: <strong>2</strong></p>
+                <p>Buku yang Tersedia untuk Dipinjam di Perpustakaan Sekolah: <strong>40</strong></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Konten Gabungan untuk Kegiatan Literasi dan Kegiatan Mendatang -->
+<section class="mt-5"  style="background-color: #f5f5dc;">
+    <div class="container">
+        <h2 class="text-center" data-aos='fade-up'>Kegiatan & Artikel</h2>
+        <hr class="my-4">
+        <div class="row">
+            <!-- Kolom Kiri: Kegiatan Literasi dan Kegiatan Mendatang -->
+            <div class="col-md-8">
+                <h3 class='text-center text-success' data-aos='fade-right'>Kegiatan Literasi di Sekolah</h3>
+                <hr class="my-4">
+                <p data-aos='fade-right'>Kami mengadakan berbagai kegiatan literasi untuk mendorong minat baca di kalangan siswa. Bergabunglah dalam acara berikut:</p>
+                <div class="accordion" id="literacyActivitiesAccordion" data-aos='fade-right'>
+                    <div class="card" style="background-color: #f5f5dc;">
+                        <div class="card-header" id="headingOne">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    Diskusi Buku Bulanan
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#literacyActivitiesAccordion">
+                            <div class="card-body">
+                                Diskusi buku bulanan diadakan untuk membahas berbagai judul buku dan meningkatkan pemahaman serta minat baca siswa.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="background-color: #f5f5dc;">
+                        <div class="card-header" id="headingTwo">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    Lomba Membaca untuk Siswa
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#literacyActivitiesAccordion">
+                            <div class="card-body">
+                                Lomba membaca diadakan untuk mendorong siswa berpartisipasi aktif dalam kegiatan membaca dan meningkatkan kemampuan membaca mereka.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="background-color: #f5f5dc;">
+                        <div class="card-header" id="headingThree">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                    Workshop Penulisan Kreatif
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#literacyActivitiesAccordion">
+                            <div class="card-body">
+                                Workshop penulisan kreatif bertujuan untuk mengembangkan bakat menulis siswa melalui bimbingan langsung dari penulis berpengalaman.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card" style="background-color: #f5f5dc;">
+                        <div class="card-header" id="headingFour">
+                            <h5 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                    Pameran Buku dan Penulis Tamu
+                                </button>
+                            </h5>
+                        </div>
+                        <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#literacyActivitiesAccordion">
+                            <div class="card-body">
+                                Pameran buku diadakan dengan menghadirkan penulis tamu untuk berbagi pengalaman dan wawasan tentang dunia literasi.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Kanan: Artikel Terkait dan Berita -->
+            <div class="col-md-4" data-aos='fade-left'>
+                <h3 class='text-center text-danger'>Artikel Terkait</h3>
+                <hr class="my-4">
+                <ul class="list-group" data-aos='fade-left'>
+                    <li class="list-group-item"><a href="#">Artikel 1: Meningkatkan Minat Baca di Kalangan Siswa</a></li>
+                    <li class="list-group-item"><a href="#">Artikel 2: Pentingnya Literasi untuk Masa Depan</a></li>
+                    <li class="list-group-item"><a href="#">Artikel 3: Cara Memilih Buku yang Tepat untuk Anak</a></li>
+                    <li class="list-group-item"><a href="#">Artikel 4: Manfaat Membaca untuk Perkembangan Anak</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="mt-5"  style="background-color: #f5f5dc;">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <h3 class='text-center text-success' data-aos='fade-right'>Review</h3>
+                <hr class="my-4">
+                <div class='mb-4'>
+                    <blockquote class="blockquote" data-aos='fade-right'>
+                        <p>"LibOne sangat membantu saya menemukan buku yang saya cari dengan mudah!"</p>
+                        <footer class="blockquote-footer" style="border-radius: 10px;">Nama Siswa</footer>
+                    </blockquote>
+                </div>
+                <div class="mb-4">
+                    <blockquote class="blockquote" data-aos='fade-right'>
+                        <p>"Aplikasi ini membuat proses peminjaman buku menjadi lebih praktis."</p>
+                        <footer class="blockquote-footer" style="border-radius: 10px;">Nama Guru</footer>
+                    </blockquote>
+                </div>
+                <div class="mb-4">
+                    <blockquote class="blockquote" data-aos='fade-right'>
+                        <p>"Saya suka fitur pencarian buku yang cepat dan akurat!"</p>
+                        <footer class="blockquote-footer" style="border-radius: 10px;">Nama Pengguna</footer>
+                    </blockquote>
+                </div>
+            </div>
+
+            <div class='col-md-4'>
+                <div class='mb-4'>
+                    <div class="online-books-banner">
+                        <h3 class='text-center text-primary' data-aos='fade-left'>Buku Online</h3>
+                        <hr class='my-4'>
+                        <p class='text-center' data-aos='fade-left'>Nikmati koleksi buku yang tersedia secara online, seperti novel, cerita pendek, dan lainnya.</p>
+                        <a href="{% url 'online_books' %}" class="btn btn-primary" style='display: block ; margin: 0 auto;' data-aos='fade-left'>Baca Buku Online</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Tambah Pengembalian Buku</h2>
+    <hr class="my-4">
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="transaction">Pilih Transaksi Peminjaman</label>
+            <select id="transaction" name="transaction_id" class="form-control" required>
+                {% for transaction in transactions %}
+                <option value="{{ transaction.id }}">
+                    {{ transaction.user.user.username }} - {{ transaction.book.title }} - {{ transaction.borrowed_date }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="return_date">Tanggal Kembali</label>
+            <input type="date" id="return_date" name="return_date" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Tambah Pengembalian</button>
+        <a  href="{% url 'loan_list' %}" class="btn btn-secondary">Kembali</a>
+    </form>
+</div>
+{% endblock %}

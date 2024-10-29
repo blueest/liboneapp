@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Pinjam Buku</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="book_id">Pilih Buku:</label>
+            <select name="book_id" class="form-control" required>
+                {% for book in books %}
+                <option value="{{ book.id }}">{{ book.title }} ({{ book.stock }} tersedia)</option>
+                {% empty %}
+                <option disabled>Tidak ada buku tersedia</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Pinjam</button>
+        <a href="{% url 'book_list' %}" class="btn btn-secondary">Batal</a>
+    </form>
+</div>
+{% endblock %}

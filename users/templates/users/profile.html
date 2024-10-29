@@ -1,0 +1,450 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="profile-container">
+    <!-- Header Section -->
+    <div class="profile-header">
+        <div class="background-overlay"></div>
+        <img src="{{ user.profile.background_image.url }}" alt="Background" class="background-image">
+        
+        <!-- Profile Info Header -->
+        <div class="container position-relative">
+            <div class="profile-header-content">
+                <div class="profile-picture-container">
+                    <img src="{{ user.profile.profile_image.url }}" alt="Profile Picture" class="profile-picture">
+                    {% if user.is_authenticated and user == request.user %}
+                    <div class="change-photo-overlay">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="profile-header-text">
+                    <h1 class="profile-name">{{ user.get_full_name|default:user.username }}</h1>
+                    <p class="profile-headline">{{ user.profile.job }}</p>
+                </div>
+
+                {% if user.is_authenticated and user == request.user %}
+                <div class="edit-profile-button">
+                    <a href="{% url 'edit_profile' %}" class="btn btn-primary">
+                        <i class="fas fa-edit me-2"></i>Edit Profil
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container profile-content">
+        <div class="row">
+            <!-- Left Column -->
+            <div class="col-lg-4">
+                <!-- Contact Info Card -->
+                <div class="profile-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-address-card me-2"></i>
+                         Informasi Kontak
+                    </h3>
+                    <div class="contact-info">
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <label>Email</label>
+                                <p>{{ user.email }}</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <label>Telepon</label>
+                                <p>{{ user.profile.phone_number|default:"Belum diatur" }}</p>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div>
+                                <label>Alamat</label>
+                                <p>{{ user.profile.address|default:"Belum diatur" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hobbies Card -->
+                <div class="profile-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-heart me-2"></i>
+                         Hobi
+                    </h3>
+                    <div class="hobbies-container">
+                        {% if user.profile.hobbies %}
+                            {% for hobby in user.profile.hobbies.split|slice:":3" %}
+                            <span class="hobby-tag">{{ hobby }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">Belum ada hobi yang ditambahkan</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% comment %} link to Reward System {% endcomment %}
+                <div class="profile-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-gift me-2"></i>
+                         Sistem Reward
+                    </h3>
+                    <div class="reward-link">
+                        <a href="{% url 'reward_system' %}" class="btn btn-success">Lihat Sistem Reward</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-lg-8">
+                <!-- Bio Card -->
+                <div class="profile-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-user me-2"></i>
+                         Tentang Saya
+                    </h3>
+                    <div class="bio-content">
+                        {% if user.profile.bio %}
+                            {{ user.profile.bio|linebreaks }}
+                        {% else %}
+                            <p class="text-muted">Belum ada bio yang ditambahkan</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Additional Info Card -->
+                <div class="profile-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-briefcase me-2"></i>
+                         Pekerjaan
+                    </h3>
+                    <div class="job-content">
+                        {% if user.profile.job %}
+                            <p>{{ user.profile.job }}</p>
+                        {% else %}
+                            <p class="text-muted">Belum ada informasi pekerjaan</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Activity Chart (Visible only to Admin) -->
+                {% if user.is_staff %}
+                <div class="profile-card">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-line me-2"></i>
+                         Grafik Aktivitas
+                    </h3>
+                    <canvas id="activityChart"></canvas>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Container Styles */
+    .profile-container {
+        background-color: #f8f9fa;
+        min-height: 100vh;
+    }
+
+    /* Header Styles */
+    .profile-header {
+        height: 350px;
+        position: relative;
+        overflow: hidden;
+        background-color: #2c3e50;
+    }
+
+    .background-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.7;
+    }
+
+    .background-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%);
+        z-index: 1;
+    }
+
+    .profile-header-content {
+        position: relative;
+        z-index: 2;
+        padding-top: 160px;
+        color: white;
+        display: flex;
+        align-items: flex-end;
+        gap: 2rem;
+    }
+
+    /* Profile Picture Styles */
+    .profile-picture-container {
+        position: relative;
+        margin-bottom: -50px;
+    }
+
+    .profile-picture {
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        border: 5px solid white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .change-photo-overlay {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: rgba(52, 152, 219, 0.9);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .change-photo-overlay:hover {
+        background: #2980b9;
+    }
+
+    /* Profile Header Text */
+    .profile-header-text {
+        flex-grow: 1;
+        padding-bottom: 1rem;
+    }
+
+    .profile-name {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .profile-headline {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0.5rem 0 0 0;
+    }
+
+    /* Edit Profile Button */
+    .edit-profile-button {
+        align-self: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .edit-profile-button .btn {
+        padding: 0.6rem 1.5rem;
+        border-radius: 50px;
+        font-weight: 500;
+        background-color: #3498db;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .edit-profile-button .btn:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px);
+    }
+
+    /* Content Styles */
+    .profile-content {
+        padding: 80px 0 40px;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+
+    .card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+    }
+
+    /* Contact Info Styles */
+    .info-item {
+        display: flex;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
+    .info-item i {
+        color: #3498db;
+        font-size: 1.2rem;
+        width: 24px;
+    }
+
+    .info-item label {
+        font-size: 0.85rem;
+        color: #7f8c8d;
+        margin: 0;
+    }
+
+    .info-item p {
+        margin: 0;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+
+    /* Hobbies Styles */
+    .hobbies-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .hobby-tag {
+        background: #e9f2fe;
+        color: #3498db;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+    }
+
+    /* Bio Styles */
+    .bio-content {
+        color: #2c3e50;
+        line-height: 1.6;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .profile-header-content {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding-top: 100px;
+        }
+
+        .profile-picture {
+            width: 150px;
+            height: 150px;
+        }
+
+        .edit-profile-button {
+            align-self: center;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            height: 300px;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+        }
+
+        .profile-content {
+            padding-top: 60px;
+        }
+    }
+
+    .reward-link {
+        margin-top: 1rem;
+    }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animasi hover untuk profile picture
+    const profilePic = document.querySelector('.profile-picture');
+    if(profilePic) {
+        profilePic.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05)';
+        });
+        profilePic.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Animasi hover untuk profile picture
+    const profilePic = document.querySelector('.profile-picture');
+    if (profilePic) {
+        profilePic.addEventListener('mouseenter', function() {
+            this.style.transform = 'scale(1.05)';
+        });
+        profilePic.addEventListener('mouseleave', function() {
+            this.style.transform = 'scale(1)';
+        });
+    }
+
+    const ctx = document.getElementById('activityChart').getContext('2d');
+    const activityChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [], // Tanggal atau waktu untuk sumbu X
+            datasets: [{
+                label: 'Aktivitas Pengguna',
+                data: [], // Data aktivitas real-time
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            const activity = tooltipItem.raw; // Data aktivitas
+                            const userType = activityChart.data.user_types[tooltipItem.dataIndex]; // Ambil nama pengguna
+                            return userType + ': ' + activity; // Menampilkan nama pengguna di tooltip
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Ambil data aktivitas pengguna dari server
+    fetch("{% url 'get_user_activity' %}")
+        .then(response => response.json())
+        .then(data => {
+            activityChart.data.labels = data.labels;
+            activityChart.data.datasets[0].data = data.data.map((activity) => {
+                // Anda dapat mengonversi aktivitas menjadi nilai numerik sesuai kebutuhan
+                return activity === 'view_profile' ? 1 : 0; // contoh konversi
+            });
+            activityChart.data.user_types = data.user_types; // Simpan jenis pengguna
+            activityChart.update();
+        })
+        .catch(error => console.error('Error fetching activity data:', error));
+});
+
+
+</script>
+{% endblock %}
