@@ -1,0 +1,1 @@
+web: gunicorn liboneapp.wsgi --log-file -

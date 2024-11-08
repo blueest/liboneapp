@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
-from .models import Profile, UserActivity
+from .models import Profile
 from .forms import ProfileForm
 from django.utils import timezone
 from django.contrib import messages
@@ -84,9 +84,6 @@ def logout_view(request):
 @login_required
 def profile_view(request):
     """Halaman informasi pengguna."""
-    # Mencatat aktivitas untuk semua pengguna
-    UserActivity.objects.create(user=request.user, activity_type='view_profile', timestamp=timezone.now())
-    
     return render(request, 'users/profile.html', {'user': request.user})
 
 @login_required
@@ -95,6 +92,7 @@ def edit_profile(request):
         form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Profil berhasil diperbarui!')
             return redirect('profile')
     else:
         form = ProfileForm(instance=request.user.profile)
@@ -161,31 +159,22 @@ def export_members_csv(request):
 
     return response
 
+@login_required
+def update_profile_photo(request):
+    if request.method == 'POST' and request.FILES.get('photo'):
+        # Handle file upload
+        photo = request.FILES['photo']
+        request.user.profile.profile_image = photo
+        request.user.profile.save()
+        return JsonResponse({'success': True, 'photo_url': request.user.profile.profile_image.url})
+    return JsonResponse({'success': False})
 
 @login_required
-def get_user_activity(request):
-    # Jika admin, ambil semua aktivitas
-    if request.user.is_staff:
-        activities = UserActivity.objects.all().order_by('timestamp')
-    else:
-        # Jika pengguna biasa, ambil aktivitas pengguna tersebut
-        activities = UserActivity.objects.filter(user=request.user).order_by('timestamp')
-
-    # Format data untuk grafik
-    data = {
-        'labels': [],
-        'data': [],
-        'user_types': []
-    }
-
-    for activity in activities:
-        data['labels'].append(activity.timestamp.strftime('%Y-%m-%d %H:%M:%S'))
-        data['data'].append(activity.activity_type)
-
-        # Menentukan tipe pengguna
-        if activity.user.is_staff:
-            data['user_types'].append('admin')
-        else:
-            data['user_types'].append(activity.user.username)  # Menyimpan nama pengguna
-
-    return JsonResponse(data)
+def update_cover_photo(request):
+    if request.method == 'POST' and request.FILES.get('photo'):
+        # Handle file upload
+        photo = request.FILES['photo']
+        request.user.profile.background_image = photo
+        request.user.profile.save()
+        return JsonResponse({'success': True, 'photo_url': request.user.profile.background_image.url})
+    return JsonResponse({'success': False})

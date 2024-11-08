@@ -274,31 +274,33 @@
 </section>
 
 <!-- Konten Baru untuk Buku Populer dan Jumlah Buku -->
-<section class="popular-books mt-5"  style="background-color: #f5f5dc;">
+<section class="popular-books mt-5" style="background-color: #f5f5dc;">
     <div class="container">
         <div class="row">
             <div class="col-md-8" data-aos='fade-right'>
                 <h2 class='text-center text-primary'>Buku Populer</h2>
                 <hr class="my-4">
                 <ul class="list-group">
-                    <li class="list-group-item">1. <strong>Judul Buku Pertama</strong> <span class="badge badge-primary float-right">5</span></li>
-                    <li class="list-group-item">2. <strong>Judul Buku Kedua</strong> <span class="badge badge-primary float-right">3</span></li>
-                    <li class="list-group-item">3. <strong>Judul Buku Ketiga</strong> <span class="badge badge-primary float-right">7</span></li>
-                    <li class="list-group-item">4. <strong>Judul Buku Keempat</strong> <span class="badge badge-primary float-right">2</span></li>
-                    <li class="list-group-item">5. <strong>Judul Buku Kelima</strong> <span class="badge badge-primary float-right">8</span></li>
+                    {% for book in popular_books %}
+                        <li class="list-group-item">{{ forloop.counter }}. 
+                            <strong>{{ book.title }}</strong>
+                            <span class="badge badge-primary float-right">{{ book.num_borrowed }}</span>
+                        </li>
+                    {% endfor %}
                 </ul>
             </div>
             <div class="col-md-4" data-aos='fade-left'>
                 <h2 class='text-center text-primary'>Jumlah Buku</h2>
                 <hr class="my-4">
-                <p>Total Buku Tersedia: <strong>50</strong></p>
-                <p>Buku Dipinjam: <strong>10</strong></p>
-                <p>Buku Dalam Proses Pengembalian: <strong>2</strong></p>
-                <p>Buku yang Tersedia untuk Dipinjam di Perpustakaan Sekolah: <strong>40</strong></p>
+                <p>Total Buku Tersedia: <strong>{{ total_books }}</strong></p>
+                <p>Buku Dipinjam: <strong>{{ borrowed_books }}</strong></p>
+                <p>Buku Dalam Proses Pengembalian: <strong>{{ books_in_process }}</strong></p>
+                <p>Buku yang Tersedia untuk Dipinjam di Perpustakaan Sekolah: <strong>{{ available_books }}</strong></p>
             </div>
         </div>
     </div>
 </section>
+
 
 <!-- Konten Gabungan untuk Kegiatan Literasi dan Kegiatan Mendatang -->
 <section class="mt-5"  style="background-color: #f5f5dc;">

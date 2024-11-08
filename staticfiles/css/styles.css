@@ -1,0 +1,132 @@
+/* static/css/styles.css */
+
+
+footer {
+    background-color: #F6E9B2; /* Warna latar belakang footer */
+    color: #070606; /* Warna teks footer */
+    padding: 1rem; /* Padding untuk footer */
+    text-align: center; /* Meratakan teks di tengah */
+}
+
+footer .social-icon {
+    position: relative; /* Membuat posisi relatif untuk tooltip */
+    transition: transform 0.3s ease, text-decoration 0.3s ease; /* Efek transisi untuk animasi dan garis bawah */
+}
+
+footer .social-icon:hover {
+    transform: translateY(-10px); /* Efek terangkat */
+    text-decoration: underline; /* Garis bawah saat hover */
+}
+
+footer .social-icon::after {
+    content: attr(data-tooltip); /* Menggunakan data-attribute untuk tooltip */
+    position: absolute;
+    bottom: 180%; /* Menempatkan tooltip di atas ikon */
+    left: 50%; /* Mengatur posisi horizontal ke tengah */
+    transform: translateX(-50%); /* Menggeser tooltip ke kiri untuk memusatkan */
+    background-color: #F6E9B2; /* Warna latar belakang tooltip */
+    color: #070707; /* Warna teks tooltip */
+    padding: 5px; /* Padding untuk tooltip */
+    border-radius: 5px; /* Sudut melengkung untuk tooltip */
+    white-space: nowrap; /* Mencegah text wrap */
+    z-index: 10; /* Menempatkan tooltip di atas elemen lain */
+    opacity: 0; /* Memulai dengan transparan */
+    transition: opacity 0.3s ease; /* Transisi untuk opacity */
+}
+
+footer .social-icon:hover::after {
+    opacity: 1; /* Menampilkan tooltip saat hover */
+}
+
+/* Penyesuaian warna untuk ikon media sosial */
+footer .fab.fa-facebook {
+    color: #3b5998; /* Warna Facebook */
+}
+
+footer .fab.fa-twitter {
+    color: #1DA1F2; /* Warna Twitter */
+}
+
+footer .fab.fa-instagram {
+    color: #C13584; /* Warna Instagram */
+}
+
+footer .fab.fa-whatsapp {
+    color: #25D366; /* Warna WhatsApp */
+}
+
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .jumbotron {
+        padding: 1.5rem; /* Menyesuaikan padding pada layar kecil */
+    }
+
+    h1 {
+        font-size: 2rem; /* Menyesuaikan ukuran font untuk h1 */
+    }
+
+    h2 {
+        font-size: 1.5rem; /* Menyesuaikan ukuran font untuk h2 */
+    }
+
+    h3 {
+        font-size: 1.2rem; /* Menyesuaikan ukuran font untuk h3 */
+    }
+
+    .btn-primary {
+        width: 100%; /* Membuat tombol lebar penuh pada layar kecil */
+    }
+}
+
+    /* STYLE BOOK_LIST.HTML */
+    .table {
+        border-radius: 10px; /* Menambahkan border radius untuk tabel */
+        overflow: hidden; /* Menyembunyikan sudut yang tajam */
+    }
+    
+    .table tbody tr {
+        background-color: #F6E9B2; /* Warna latar belakang tabel */
+        transition: background-color 0.3s, transform 0.3s; /* Transisi saat hover */
+    }
+    
+    .table tbody tr:hover {
+        background-color: #D1C6A0; /* Warna saat hover */
+        transform: scale(1.02); /* Efek zoom saat hover */
+    }
+    
+    .table th {
+        background-color: #1B1B1B; /* Warna gelap untuk header tabel */
+        color: #F6E9B2; /* Warna teks untuk header tabel */
+        text-align: center; /* Rata tengah untuk header */
+    }
+    
+    .table td {
+        color: #070606; /* Warna teks untuk data tabel */
+        text-align: center; /* Rata tengah untuk data tabel */
+    }
+    
+    .btn-info {
+        background-color: #007BFF; /* Warna tombol info */
+        border-color: #007BFF; /* Warna border tombol info */
+    }
+    
+    .btn-warning {
+        background-color: #FFC107; /* Warna tombol warning */
+        border-color: #FFC107; /* Warna border tombol warning */
+    }
+    
+    .btn-danger {
+        background-color: #DC3545; /* Warna tombol danger */
+        border-color: #DC3545; /* Warna border tombol danger */
+    }

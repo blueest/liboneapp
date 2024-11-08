@@ -6,7 +6,7 @@
     <p><strong>Penulis:</strong> {{ book.author }}</p>
     
     <div class="book-reader mb-4">
-        <iframe id="pdf-reader" src="http://127.0.0.1:8000{{ book.file.url }}" width="100%" height="600px" style="border: none;"></iframe>
+        <iframe id="pdf-reader" src="{{ book.file.url }}" width="100%" height="600px" style="border: none;"></iframe>
     </div>
 
     <!-- Tombol Unduh Buku -->

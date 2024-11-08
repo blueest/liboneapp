@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         :root {
             --primary-color: #007bff;
@@ -229,6 +230,14 @@
             color: #f5f5dc;
             transform: translateY(-4px);
         }
+
+        .notifications {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1050; /* Agar muncul di atas elemen lainnya */
+          }
+          
     </style>        
 </head>
 <body>
@@ -298,6 +307,7 @@
         </nav>
     </header>
 
+
     <main role="main" class="container">
         {% block content %}
         {% endblock %}
@@ -319,7 +329,7 @@
                     <hr>
                     <li>
                         <p class="text-p">Ayo Bergabung Bersama Kami!</p>
-                        <a class="btn btn-outline-secondary btn-lg mt-3" href="{% url 'register' %}" role="button">Daftar Sekarang</a>
+                        <a class="btn btn-outline-secondary btn-lg mt-3" href="{% url 'register' %}" role="button" style="margin-bottom: 30px;">Daftar Sekarang</a>
                     </li>
                 </ul>
             </div>
@@ -328,7 +338,7 @@
             <div class="col-md-4">
                 <h5 style='color : #F6E9B2;'>Find Us</h5>
                 <hr class='my-4'>
-                <div>
+                <div style="padding-bottom: 30px;">
                     <a href="https://facebook.com" target="_blank" class="text-light social-icon" data-tooltip="Facebook">
                         <i class="fab fa-facebook fa-2x"></i>
                     </a>
@@ -351,7 +361,7 @@
                 <p>Jl. Contoh No. 1, Desa Contoh, Kecamatan Contoh, Kota Contoh, Provinsi Contoh.</p>
                 <!-- Google Maps Embed -->
                 <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.2135162981455!2d-122.40104138468152!3d37.78507597975711!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8085809b9ebcf3e3%3A0xb9c2c0cbfbe0172e!2sYour%20School%20Name!5e0!3m2!1sen!2sus!4v1617934026151!5m2!1sen!2sus" 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3949.416949416174!2d108.39889801418755!3d-7.5039752158406315!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e65f38db702e52d%3A0x49073979e56ee7ae!2sSMP%20NEGERI%201%20LANGKAPLANCAR!5e0!3m2!1sen!2sid!4v1637324138656!5m2!1sen!2sid"
                     width="100%" 
                     height="150" 
                     style="border:0;" 
@@ -374,6 +384,19 @@
         AOS.init({
             duration: 1200, // Durasi animasi
         });
+
+        {% if messages %}
+        document.addEventListener("DOMContentLoaded", function() {
+            {% for message in messages %}
+              Swal.fire({
+                icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% elif message.tags == "warning" %}warning{% else %}info{% endif %}',
+                title: '{{ message }}',
+                showConfirmButton: true,
+                timer: 3000  // Notifikasi akan otomatis hilang setelah 3 detik
+              });
+            {% endfor %}
+        });
+        {% endif %}
 
         // Navbar Scroll Effect
         window.addEventListener('scroll', function() {

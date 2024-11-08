@@ -2,10 +2,46 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Book, OnlineBook
 from django.contrib import messages
 from .forms import SearchForm
+from circulations.models import Transaction
+from django.db.models import Sum, Count
 
 # Create your views here.
 def index(request):
-    return render(request, 'index.html')
+    try:
+        # Query Buku Populer
+        popular_books = Book.objects.annotate(num_borrowed=Count('transaction')).order_by('-num_borrowed')[:5]
+        
+        # Total Buku
+        total_books = Book.objects.aggregate(total_stock=Sum('stock'))['total_stock'] or 0
+        
+        # Buku Dipinjam
+        borrowed_books = Transaction.objects.filter(return_date__isnull=True).count()
+        
+        # Buku Dalam Proses Pengembalian
+        books_in_process = Transaction.objects.filter(return_date__isnull=True).count()
+        
+        # Buku Tersedia
+        available_books = total_books - borrowed_books - books_in_process
+
+        print(f"Popular Books: {popular_books}")
+        print(f"Total Books: {total_books}")
+        print(f"Borrowed Books: {borrowed_books}")
+        print(f"Books In Process: {books_in_process}")
+        print(f"Available Books: {available_books}")
+
+        context = {
+            'popular_books': popular_books,
+            'total_books': total_books,
+            'borrowed_books': borrowed_books,
+            'books_in_process': books_in_process,
+            'available_books': available_books,
+        }
+        
+        return render(request, 'index.html', context)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return render(request, 'index.html', {})
 
 def book_list(request):
     # Menampilkan daftar semua buku
