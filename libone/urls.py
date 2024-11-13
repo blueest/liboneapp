@@ -18,12 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from . import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('books.urls')),
     path('users/', include('users.urls')),
     path('circulations/', include('circulations.urls')),
+    path('kebijakan/', views.kebijakan, name='kebijakan'),
+    path('syarat-dan-ketentuan/', views.syarat_dan_ketentuan, name='syarat_dan_ketentuan'),
 ]
 
 if settings.DEBUG:
