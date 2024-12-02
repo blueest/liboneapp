@@ -1,0 +1,12 @@
+{
+    "builds": [
+      {
+        "src": ".",
+        "use": "@railway/builders.python"
+      }
+    ],
+    "deployments": {
+      "startCommand": "gunicorn libone .wsgi:application 0.0.0.0:8000"
+    }
+  }
+  
