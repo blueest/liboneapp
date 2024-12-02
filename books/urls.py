@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import index, book_list, book_detail, add_book, edit_book, delete_book, search_books, online_books, detail_online_book
+from .views import index, book_list, book_detail, add_book, edit_book, delete_book, search_books, online_books, detail_online_book, download_books_template, import_books_csv
 
 urlpatterns = [
     path('', index, name='index'),
@@ -11,4 +11,6 @@ urlpatterns = [
     path('search/', search_books, name='search_books'),
     path('online/', online_books, name='online_books'),
     path('online/<int:pk>/', detail_online_book, name='detail_online_book'),
+    path('import-csv/', import_books_csv, name='import_books_csv'),
+    path('download-template/', download_books_template, name='download_books_template'),
 ]

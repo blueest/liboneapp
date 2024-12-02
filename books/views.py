@@ -4,6 +4,10 @@ from django.contrib import messages
 from .forms import SearchForm
 from circulations.models import Transaction
 from django.db.models import Sum, Count
+from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from datetime import datetime
+import csv
 
 # Create your views here.
 def index(request):
@@ -67,6 +71,63 @@ def add_book(request):
         return redirect('book_list')
     
     return render(request, 'books/add_book.html')
+
+def download_books_template(request):
+    """Mengunduh template CSV untuk daftar buku."""
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="template_buku.csv"'
+    
+    writer = csv.writer(response)
+    writer.writerow(['title', 'author', 'published_date', 'stock'])
+    
+    # example
+    writer.writerow(['Contoh Judul', 'Nama Penulis', '2024-01-01', '10'])
+    
+    return response
+
+def import_books_csv(request):
+    """Mengimpor buku dari file CSV."""
+    if request.method == 'POST' and request.FILES.get('csv_file'):
+        csv_file = request.FILES['csv_file']
+        
+        if not csv_file.name.endswith('.csv'):
+            messages.error(request, 'File harus berformat CSV!')
+            return redirect('add_book')
+        
+        try:
+            decoded_file = csv_file.read().decode('utf-8').splitlines()
+            reader = csv.DictReader(decoded_file)
+            
+            success_count = 0
+            error_count = 0
+            
+            for row in reader:
+                try:
+                    # Konversi format tanggal jika diperlukan
+                    published_date = datetime.strptime(row['published_date'].strip(), '%Y-%m-%d').date()
+                    
+                    Book.objects.create(
+                        title=row['title'].strip(),
+                        author=row['author'].strip(),
+                        published_date=published_date,
+                        stock=int(row['stock'])
+                    )
+                    success_count += 1
+                except Exception as e:
+                    error_count += 1
+                    continue
+            
+            if success_count > 0:
+                messages.success(request, f'{success_count} buku berhasil diimpor!')
+            if error_count > 0:
+                messages.warning(request, f'{error_count} buku gagal diimpor.')
+                
+        except Exception as e:
+            messages.error(request, f'Terjadi kesalahan: {str(e)}')
+        
+        return redirect('book_list')
+        
+    return redirect('add_book')
 
 def edit_book(request, book_id):
     """Mengedit informasi buku."""

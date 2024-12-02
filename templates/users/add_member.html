@@ -1,96 +1,114 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <h2 class="text-center text-dark">Tambah Anggota</h2>
-    <hr class="my-4">
+<div class="addmember-container">
+    <div class="addmember-card" style="animation: fadeIn 0.7s ease-out;">
+        <h2 class="addmember-title text-center">Tambah Anggota</h2>
+        <hr class="my-4">
 
-    <!-- Penambahan anggota secara manual -->
-    <h3 class="text-dark">Tambahkan Anggota Secara Manual</h3>
-    <form method="post" class="bg-light p-4 rounded mb-4" style="box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); animation: fadeIn 0.5s;">
+        <!-- Form Manual -->
+        <form method="post">
         {% csrf_token %}
-        <div class="form-group">
-            <label for="username" class="text-dark">Username:</label>
-            <input type="text" class="form-control" name="username" required>
-        </div>
-        <div class="form-group">
-            <label for="email" class="text-dark">Email:</label>
-            <input type="email" class="form-control" name="email" required>
-        </div>
-        <div class="form-group">
-            <label for="password" class="text-dark">Password:</label>
-            <input type="password" class="form-control" name="password" required>
-        </div>
-        <button type="submit" name="manual_add" class="btn btn-success btn-sm">Tambah Anggota</button>
-    </form>
+            <div class="form-group">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
 
-    <hr>
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
 
-    <!-- Upload CSV untuk menambahkan anggota -->
-    <h3 class="text-dark">Tambahkan Anggota dari CSV</h3>
-    <form method="post" enctype="multipart/form-data" class="bg-light p-4 rounded" style="box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); animation: fadeIn 0.5s;">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="upload_csv" class="text-dark">Pilih file CSV:</label>
-            <input type="file" class="form-control-file" name="upload_csv" required>
-        </div>
-        <div class="d-flex justify-content-between">
-            <button type="submit" class="btn btn-primary btn-sm">Upload CSV</button>
-            <a href="{% url 'download_csv_template' %}" class="btn btn-info btn-sm">Download Template CSV</a>
-        </div>
-    </form>
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <button type="submit" name="manual_add" class="btn btn-info btn-sm">Tambah Anggota</button>
+                <a href="{% url 'member_list' %}" class="btn btn-secondary btn-sm">Kembali ke Daftar Anggota</a>
+            </div>
+        </form>
 
-    <hr class="my-4">
-    <a href="{% url 'member_list' %}" class="btn btn-info btn-sm">Kembali ke Daftar Anggota</a>
+        <!-- Divider -->
+        <div class="text-center my-4">
+            <hr class="d-inline-block w-25">
+            <span class="px-3">ATAU</span>
+            <hr class="d-inline-block w-25">
+        </div>
+
+        <!-- Import CSV Section -->
+        <div class="csv-import-section">
+            <h4 class="text-center mb-3">Impor dari CSV</h4>
+            
+            <form method="post" enctype="multipart/form-data" class="mb-3">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input type="file" name="upload_csv" class="form-control" accept=".csv" required>
+                </div>
+                <div class="d-flex justify-content-center mt-2">
+                    <button type="submit" class="btn btn-success btn-sm">Impor CSV</button>
+                </div>
+            </form>
+            
+            <div class="text-center">
+                <a href="{% url 'download_csv_template' %}" class="btn btn-outline-info btn-sm">
+                    <i class="fas fa-download"></i> Download Template CSV
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- Tambahkan CSS khusus untuk gaya form -->
 <style>
-    body {
-        background-color: #f5f5dc; /* Warna latar belakang halaman */
+    :root {
+        --primary-beige: #f5f5dc;
+        --dark-beige: #e5e5c3;
+        --accent-brown: #8B7355;
+        --soft-blue: #7393B3;
+        --light-gray: #F5F5F5;
+        --dark-gray: #696969;
+    }
+
+    .addmember-container {
+        align-items: center;
+        justify-content: center;
+        background-color: var(--dark-beige);
+        padding: 25px;
+        border-radius: 15px;
+    }
+
+    .addmember-container h2 {
+        color: var(--dark-gray);
+        font-weight: 600;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        color: var(--dark-gray);
+        font-weight: 500;
+        margin-bottom: 0.5rem;
     }
 
     .form-control {
-        border: 1px solid #007BFF; /* Border untuk input */
-        transition: border-color 0.3s; /* Transisi border saat fokus */
+        border: none;
+        border-bottom: 2px solid var(--dark-gray);
+        border-radius: 5px;
+        padding: 0.75rem 0;
+        background: transparent;
+        transition: all 0.3s ease;
     }
 
     .form-control:focus {
-        border-color: #F6E9B2; /* Border warna saat fokus */
-        box-shadow: 0 0 5px rgba(246, 233, 178, 0.8); /* Efek bayangan saat fokus */
-    }
-
-    .btn-success {
-        background-color: #28a745; /* Warna tombol tambah anggota */
-        border-color: #28a745; /* Border warna tombol tambah anggota */
-    }
-
-    .btn-success:hover {
-        background-color: #218838; /* Warna saat hover tombol tambah anggota */
-        border-color: #1e7e34; /* Border warna saat hover tombol tambah anggota */
-    }
-
-    .btn-primary {
-        background-color: #007BFF; /* Warna tombol upload CSV */
-        border-color: #007BFF; /* Border warna tombol upload CSV */
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3; /* Warna saat hover tombol upload CSV */
-        border-color: #004085; /* Border warna saat hover tombol upload CSV */
-    }
-
-    .bg-light {
-        background-color: #F6E9B2; /* Warna latar belakang form */
-        color: #070606; /* Warna teks untuk form */
-    }
-
-    .rounded {
-        border-radius: 10px; /* Radius sudut form */
-    }
-
-    .text-dark {
-        color: #070606; /* Warna teks gelap untuk heading */
+        box-shadow: none;
+        border-color: var(--accent-brown);
+        background: transparent;
     }
 
     @keyframes fadeIn {

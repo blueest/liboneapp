@@ -79,7 +79,7 @@ def logout_view(request):
     """Halaman logout pengguna."""
     logout(request)
     messages.success(request, 'Anda telah logout.')
-    return redirect('index')
+    return redirect('login')
 
 @login_required
 def profile_view(request):
