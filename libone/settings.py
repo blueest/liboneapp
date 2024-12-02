@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-tm*&b7&wn-9b)vvf77rgcoiiszf@y8k&8-zm0vz&3nkmtz40-z
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['liboneapp.up.railway.app', 'localhost', '127.0.0.1']
 
 
 
@@ -139,3 +139,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://liboneapp.up.railway.app',  # Domain yang digunakan
+]
