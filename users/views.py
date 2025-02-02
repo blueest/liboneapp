@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator
 from .models import Profile
 from .forms import ProfileForm
 from django.utils import timezone
@@ -20,7 +21,11 @@ def is_admin(user):
 def member_list(request):
     """Menampilkan daftar anggota."""
     users = User.objects.all()  # Ambil semua pengguna
-    return render(request, 'users/member_list.html', {'users': users})
+    # Set up pagination with 10 users per page (adjust this as needed)
+    paginator = Paginator(users, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'users/member_list.html', {'users': page_obj})
 
 def register_view(request):
     """Halaman pendaftaran pengguna baru."""
@@ -88,14 +93,18 @@ def profile_view(request):
 
 @login_required
 def edit_profile(request):
+    # Pastikan user memiliki profile
+    profile, created = Profile.objects.get_or_create(user=request.user)
+
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=request.user.profile)
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             messages.success(request, 'Profil berhasil diperbarui!')
             return redirect('profile')
     else:
-        form = ProfileForm(instance=request.user.profile)
+        form = ProfileForm(instance=profile)
+
     return render(request, 'users/edit_profile.html', {'form': form})
 
 def add_member(request):
@@ -107,6 +116,10 @@ def add_member(request):
             username = request.POST['username']
             email = request.POST['email']
             password = request.POST['password']
+            
+            if User.objects.filter(username=username).exists():
+                messages.error(request, f'Username "{username}" sudah ada!')
+                return redirect('add_member')
 
             user = User.objects.create_user(username=username, password=password, email=email)
             Profile.objects.create(user=user)
@@ -121,17 +134,35 @@ def add_member(request):
                 messages.error(request, 'File harus berformat CSV.')
                 return redirect('add_member')
 
-            data = TextIOWrapper(csv_file.file, encoding='utf-8')
-            reader = csv.reader(data)
-            next(reader)  # Skip header
-            for row in reader:
-                username, email, password = row
-                user = User.objects.create_user(username=username, password=password, email=email)
-                Profile.objects.create(user=user)
+            data = TextIOWrapper(csv_file.file, encoding='utf-8-sig')
+            reader = csv.DictReader(data)
+            
+            added_count = 0
+            skipped_count = 0
 
-            messages.success(request, 'Anggota dari CSV berhasil ditambahkan!')
+            for row in reader:
+                username = row.get('username', '').strip()
+                email = row.get('email', '').strip()
+                password = row.get('password', '').strip()
+
+                if not username or not email or not password:
+                    skipped_count += 1
+                    continue
+
+                # Cek apakah user sudah ada
+                user, created = User.objects.get_or_create(username=username, defaults={'email': email})
+
+                if created:
+                    user.set_password(password)
+                    user.save()
+                    Profile.objects.get_or_create(user=user)
+                    added_count += 1
+                else:
+                    skipped_count += 1
+
+            messages.success(request, f'{added_count} anggota berhasil ditambahkan, {skipped_count} dilewati karena sudah ada.')
             return redirect('member_list')
-        
+
     return render(request, 'users/add_member.html')
 
 def download_csv_template(request):

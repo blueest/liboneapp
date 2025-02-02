@@ -1,6 +1,99 @@
 {% extends 'base.html' %}
 
 {% block content %}
+<style>
+    :root {
+        --primary-beige: #f5f5dc;
+        --dark-beige: #e5e5c3;
+        --accent-brown: #8B7355;
+        --soft-blue: #7393B3;
+        --light-gray: #F5F5F5;
+        --dark-gray: #696969;
+    }
+
+    /* Pagination Styles */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .pagination .page-item {
+        margin: 0 5px;
+    }
+
+    .pagination .page-link {
+        display: inline-block;
+        padding: 10px 15px;
+        background-color: var(--primary-beige);
+        color: var(--dark-gray);
+        font-weight: bold;
+        border-radius: 5px;
+        font-size: 14px;
+        text-align: center;
+        text-decoration: none;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    /* Active Page Link */
+    .pagination .page-item.active .page-link {
+        background-color: var(--accent-brown);
+        border: none;
+        color: white;
+        font-weight: bold;
+        transform: scale(1.1); /* Slight zoom effect */
+    }
+
+    /* Hover Effect for Links */
+    .pagination .page-link:hover {
+        background-color: var(--accent-brown);
+        color: white;
+        cursor: pointer;
+        transform: scale(1.1);
+    }
+
+    /* Disabled Link (No Interaction) */
+    .pagination .page-item.disabled .page-link {
+        background-color: var(--light-gray);
+        color: var(--dark-gray);
+        cursor: not-allowed;
+    }
+
+    /* First and Last Button Styling */
+    .pagination .page-item:first-child .page-link,
+    .pagination .page-item:last-child .page-link {
+        border-radius: 50%; /* Rounded for first and last buttons */
+    }
+
+    /* Previous and Next Buttons */
+    .pagination .page-item .page-link {
+        padding: 8px 12px;
+    }   
+
+    /* Special Styling for "First" and "Last" Links */
+    .pagination .page-item .page-link[aria-label="First"],
+    .pagination .page-item .page-link[aria-label="Last"] {
+        font-weight: bold;
+        background-color: var(--soft-blue);
+        color: white;
+    }
+
+    /* Add a subtle shadow for a floating effect */
+    .pagination .page-link {
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }   
+
+    /* Active State Hover Effect */
+    .pagination .page-item.active .page-link:hover {
+        background-color: var(--accent-brown);
+        color: white;
+        transform: scale(1.2);
+    }
+</style>
+
 <div class="container mt-5">
     <h2 class="text-center text-dark">Daftar Buku</h2>
     <hr class="my-4">
@@ -46,6 +139,25 @@
             {% endfor %}
         </tbody>
     </table>
+
+    <!-- Paginasi -->
+    <div class="d-flex justify-content-center mt-3">
+        <nav>
+            <ul class="pagination">
+                {% if books.has_previous %}
+                    <li class="page-item"><a class="page-link" href="?page=1">&laquo; First</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ books.previous_page_number }}">Previous</a></li>
+                {% endif %}
+
+                <li class="page-item active"><span class="page-link">{{ books.number }} / {{ books.paginator.num_pages }}</span></li>
+
+                {% if books.has_next %}
+                    <li class="page-item"><a class="page-link" href="?page={{ books.next_page_number }}">Next</a></li>
+                    <li class="page-item"><a class="page-link" href="?page={{ books.paginator.num_pages }}">Last &raquo;</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
 
     {% if not user.is_superuser %}
     <div class="text-center mt-3">

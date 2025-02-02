@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
 from django.db.models import Count
+from django.core.paginator import Paginator
 import csv
 
 # Create your views here.
@@ -62,6 +63,12 @@ def loan_list(request):
     else:
         transactions = Transaction.objects.filter(user=request.user.profile)  # Transaksi user biasa
 
+    # Pagination logic: display 10 transactions per page
+    paginator = Paginator(transactions, 10)
+    page_number = request.GET.get('page')  # Get current page number from query string
+    page_obj = paginator.get_page(page_number)  # Get the page object based on the current page number
+
+    
     # Logika untuk mengembalikan buku
     if request.method == 'POST':
         transaction_ids = request.POST.getlist('transaction_ids')
@@ -76,7 +83,7 @@ def loan_list(request):
 
         return redirect('loan_list')
 
-    return render(request, 'transactions/loan_list.html', {'transactions': transactions})
+    return render(request, 'transactions/loan_list.html', {'transactions': page_obj})
 
 @login_required
 def return_list(request):
@@ -86,7 +93,12 @@ def return_list(request):
     else:
         transactions = Transaction.objects.filter(user=request.user.profile, return_date__isnull=False)  # Pengembalian user biasa
 
-    return render(request, 'transactions/return_list.html', {'transactions': transactions})
+    # Pagination logic: display 10 transactions per page
+    paginator = Paginator(transactions, 10)
+    page_number = request.GET.get('page')  # Get current page number from query string
+    page_obj = paginator.get_page(page_number)  # Get the page object based on the current page number
+
+    return render(request, 'transactions/return_list.html', {'transactions': page_obj})
 
 @login_required
 def edit_loan(request, loan_id):

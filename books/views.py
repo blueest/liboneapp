@@ -7,6 +7,7 @@ from django.db.models import Sum, Count
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from datetime import datetime
+from django.core.paginator import Paginator
 import csv
 
 # Create your views here.
@@ -50,7 +51,10 @@ def index(request):
 def book_list(request):
     # Menampilkan daftar semua buku
     books = Book.objects.all()
-    return render(request, 'books/book_list.html', {'books': books})
+    paginator = Paginator(books, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'books/book_list.html', {'books': page_obj})
 
 def book_detail(request, book_id):
     """Menampilkan detail buku tertentu."""
@@ -114,6 +118,7 @@ def import_books_csv(request):
                     )
                     success_count += 1
                 except Exception as e:
+                    print(f"Error on row {row}: {e}")
                     error_count += 1
                     continue
             
